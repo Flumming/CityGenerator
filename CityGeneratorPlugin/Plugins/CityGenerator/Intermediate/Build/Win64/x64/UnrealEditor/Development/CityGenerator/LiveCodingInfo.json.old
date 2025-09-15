@@ -1,0 +1,10 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.CityGenerator.cpp.obj": [
+			"PerModuleInline.gen.cpp.obj",
+			"CityGenerator.cpp.obj",
+			"Roads.cpp.obj"
+		]
+	}
+}

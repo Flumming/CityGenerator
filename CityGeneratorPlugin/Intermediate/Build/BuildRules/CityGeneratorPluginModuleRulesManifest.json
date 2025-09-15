@@ -1,0 +1,9 @@
+{
+	"SourceFiles": [
+		"C:\\Users\\flemm\\Documents\\Unreal Projects\\CityGenerator\\CityGeneratorPlugin\\Source\\CityGeneratorPlugin\\CityGeneratorPlugin.Build.cs",
+		"C:\\Users\\flemm\\Documents\\Unreal Projects\\CityGenerator\\CityGeneratorPlugin\\Plugins\\CityGenerator\\Source\\CityGenerator\\CityGenerator.Build.cs",
+		"C:\\Users\\flemm\\Documents\\Unreal Projects\\CityGenerator\\CityGeneratorPlugin\\Source\\CityGeneratorPlugin.Target.cs",
+		"C:\\Users\\flemm\\Documents\\Unreal Projects\\CityGenerator\\CityGeneratorPlugin\\Source\\CityGeneratorPluginEditor.Target.cs"
+	],
+	"EngineVersion": "5.5.4"
+}

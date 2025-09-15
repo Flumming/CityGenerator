@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\CityGeneratorPlugin.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\CityGeneratorPlugin.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\CityGeneratorPluginEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\.vsconfig" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{BB38096A-B391-30DC-A0D4-4F3EA6B44507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\CityGenerator">
+      <UniqueIdentifier>{17D95D3F-C653-3FF4-8873-5582D8EB68BC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\CityGenerator\Source">
+      <UniqueIdentifier>{75BE43DA-B903-38B8-846E-4D7CAB6BDC58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\CityGenerator\Source\CityGenerator">
+      <UniqueIdentifier>{017A9BD0-83D0-38BD-AC9D-7053DC2C0825}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\CityGenerator\Source\CityGenerator\CityGenerator.Build.cs">
+      <Filter>Plugins\CityGenerator\Source\CityGenerator</Filter>
+    </None>
+    <Filter Include="Plugins\CityGenerator\Source\CityGenerator\Private">
+      <UniqueIdentifier>{44908F5D-5D1C-3D88-B022-76FEC4283C34}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Private\CityGenerator.cpp">
+      <Filter>Plugins\CityGenerator\Source\CityGenerator\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Private\Roads.cpp">
+      <Filter>Plugins\CityGenerator\Source\CityGenerator\Private</Filter>
+    </ClCompile>
+    <Filter Include="Plugins\CityGenerator\Source\CityGenerator\Public">
+      <UniqueIdentifier>{E756F643-8696-3D53-89A8-E698B5B06A1A}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Public\CityGenerator.h">
+      <Filter>Plugins\CityGenerator\Source\CityGenerator\Public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Public\Roads.h">
+      <Filter>Plugins\CityGenerator\Source\CityGenerator\Public</Filter>
+    </ClCompile>
+    <None Include="..\..\Plugins\CityGenerator\CityGenerator.uplugin">
+      <Filter>Plugins\CityGenerator</Filter>
+    </None>
+    <Filter Include="Plugins\CityGenerator\Resources">
+      <UniqueIdentifier>{E4D0DE3C-55D0-3D60-8AB4-040F888B9731}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\CityGenerator\Resources\Icon128.png">
+      <Filter>Plugins\CityGenerator\Resources</Filter>
+    </None>
+    <Filter Include="Source\CityGeneratorPlugin">
+      <UniqueIdentifier>{4E2EECEE-8C94-3889-851C-30BC2CB22C99}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\CityGeneratorPlugin\CityGeneratorPlugin.Build.cs">
+      <Filter>Source\CityGeneratorPlugin</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\CityGeneratorPlugin\CityGeneratorPlugin.cpp">
+      <Filter>Source\CityGeneratorPlugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CityGeneratorPlugin\CityGeneratorPlugin.h">
+      <Filter>Source\CityGeneratorPlugin</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

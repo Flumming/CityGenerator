@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-CityGeneratorPlugin.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Intermediate\Build\Win64\x64\CityGeneratorPluginEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
+"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGeneratorPlugin\CityGeneratorPlugin.cpp.obj"
+"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGeneratorPlugin\PerModuleInline.gen.cpp.obj"
+"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGeneratorPlugin\Default.rc2.res"
+/OUT:"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGeneratorPlugin\UnrealEditor-CityGeneratorPlugin.lib"

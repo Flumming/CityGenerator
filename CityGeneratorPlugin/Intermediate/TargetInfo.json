@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "CityGeneratorPlugin",
+			"Path": "..\\Source\\CityGeneratorPlugin.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "CityGeneratorPluginEditor",
+			"Path": "..\\Source\\CityGeneratorPluginEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

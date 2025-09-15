@@ -1,0 +1,15 @@
+{
+	"version": 1,
+	"changelists": [
+		{
+			"guid": "00000000000000000000000000000000",
+			"description": "Default Uncontrolled Changelist",
+			"files": [
+				"C:/Users/flemm/Documents/Unreal Projects/CityGeneratorPlugin/Content/StarterContent/Blueprints/Blueprint_CeilingLight.uasset",
+				"C:/Users/flemm/Documents/Unreal Projects/CityGeneratorPlugin/Plugins/CityGenerator/Content/Blueprints/Node.uasset",
+				"C:/Users/flemm/Documents/Unreal Projects/CityGeneratorPlugin/Plugins/CityGenerator/Content/Blueprints/Node1.uasset",
+				"C:/Users/flemm/Documents/Unreal Projects/CityGeneratorPlugin/Plugins/CityGenerator/Content/Node.uasset"
+			]
+		}
+	]
+}
