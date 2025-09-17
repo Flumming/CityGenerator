@@ -17,6 +17,15 @@ struct Node{
 	}
 };
 
+struct DirectedEdge {
+	Node* from;
+	Node* to;
+
+	bool operator==(const DirectedEdge& Other) const {
+		return from == Other.from && to == Other.to;
+	}
+};
+
 struct BoundaryResult {
 	TArray<FVector2D> BoundaryPoints;
 	TArray<FVector2D> InnerPoints;
@@ -53,9 +62,15 @@ public:
 	TArray<Node*> nodes;
 	TArray<Node*> tempNodes;
 
+	TArray<TArray<Node*>> faces;
+
 private:
 	void ConnectNodes();
 	bool roadConstraints(Node& node1, Node& node2);
 
 	void SplitEdges();
+	void CleanNodes();
+	void DivideFaces();
+
+	TArray<DirectedEdge> directedEdges;
 };

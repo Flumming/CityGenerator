@@ -3,6 +3,9 @@
 #include "CityGenerator.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/StaticMesh.h"
+#include "ProceduralMeshComponent.h"
+#include "CompGeom/PolygonTriangulation.h"
+#include "IndexTypes.h"
 
 #define LOCTEXT_NAMESPACE "FCityGeneratorModule"
 
@@ -30,15 +33,16 @@ void FCityGeneratorModule::OnWorldStarted(UWorld* World, const UWorld::Initializ
 
 	//SetupRoad();
 	TArray<FVector2d> startpositions;
-	startpositions.Add(FVector2d(0.0f, 0.0f));
+	//startpositions.Add(FVector2d(0.0f, 0.0f));
 
 	roadGraph.GenerateRoad(startpositions, 3.0f);
 
+	UE_LOG(LogTemp, Warning, TEXT("num %i"), roadGraph.nodes.Num());
 	for (int i = 0; i < roadGraph.nodes.Num(); i++) {
 
 		auto node = roadGraph.nodes[i];
 
-		FVector location(node->position, 0.0f);
+		FVector location(node->position, 10.0f);
 		FRotator rotation(0.f, 0.f, 0.f);
 
 		FActorSpawnParameters spawnparams;
@@ -54,7 +58,7 @@ void FCityGeneratorModule::OnWorldStarted(UWorld* World, const UWorld::Initializ
 			if (node->id < neighbor->id) continue; // Avoid double drawing
 
 			FVector Start = location;
-			FVector End(neighbor->position.X, neighbor->position.Y, 0.f);
+			FVector End(neighbor->position.X, neighbor->position.Y, 10.f);
 			FVector MidPoint = (Start + End) / 2;
 
 			FVector Direction = End - Start;
@@ -72,48 +76,63 @@ void FCityGeneratorModule::OnWorldStarted(UWorld* World, const UWorld::Initializ
 			}
 		}
 	}
-}
 
-/*
-void FCityGeneratorModule::SetupRoad() {
-	graph.nodes.Empty();
-	float roadLength = 15.0f;
-	float randomRange = 1000.0f;
+	// Generate polygons from road.Graph.faces list of faces
+	for (auto face : roadGraph.faces) {
+		if (face.Num() < 3) continue; 
 
-	// Generate random start and end points
-	FVector2d start = FVector2d(FMath::RandRange(-randomRange, randomRange), FMath::RandRange(-randomRange, randomRange));
-	FVector2d end = FVector2d(FMath::RandRange(-randomRange, randomRange), FMath::RandRange(-randomRange, randomRange));
-	int index = 0;
-	FVector2d position1 = start, position2 = start;
+		TArray<FVector> Vertices;
+		for (auto node : face) {
+			Vertices.Add(FVector(node->position.X, node->position.Y, 10.0f));
+		}
 
-	while (FVector2D::Distance(position2, end) > roadLength) {
-		FVector2d vector = end - start;
-		FVector2d unitVector = vector.GetSafeNormal();
+		TArray<UE::Geometry::FIndex3i> Triangles3i;
+		PolygonTriangulation::TriangulateSimplePolygon(Vertices, Triangles3i);
 
-		//Rotate the unit vector by a random angle between -20 and 20 degrees
-		float angle = FMath::RandRange(-20.0f, 20.0f);
-		float radians = FMath::DegreesToRadians(angle);
-		float cosAngle = FMath::Cos(radians);
-		float sinAngle = FMath::Sin(radians);
-		unitVector = FVector2d(
-			unitVector.X * cosAngle - unitVector.Y * sinAngle,
-			unitVector.X * sinAngle + unitVector.Y * cosAngle
-		);
+		// Convert to TArray<int32> for ProceduralMeshComponent
+		TArray<int32> Triangles;
+		Triangles.Reserve(Triangles3i.Num() * 3);
+		for (const auto& Tri : Triangles3i) {
+			Triangles.Add(Tri.A);
+			Triangles.Add(Tri.B);
+			Triangles.Add(Tri.C);
+		}
 
-		position1 = position2;
-		position2 = position1 + unitVector * roadLength;
+		// Normals, UVs, tangents, and vertex colors
+		TArray<FVector> ProcNormals;
+		TArray<FVector2D> UVs;
+		TArray<FProcMeshTangent> Tangents;
+		TArray<FColor> VertexColors;
 
-		graph.AddNode(index, position1);
-		graph.AddNode(index + 1, position2);
-		graph.AddEdge(index, index + 1);
-		index++;
+		FVector Normal = FVector::UpVector; // Flat polygon facing up
+		FColor FaceColor = FColor::MakeRandomColor();
+
+		for (int32 i = 0; i < Vertices.Num(); i++) {
+			ProcNormals.Add(Normal);
+			UVs.Add(FVector2D(Vertices[i].X, Vertices[i].Y));
+			Tangents.Add(FProcMeshTangent(1, 0, 0));
+			VertexColors.Add(FaceColor);
+		}
+
+		// Spawn a dummy actor to hold the procedural mesh
+		FActorSpawnParameters SpawnParams;
+		AActor* PolygonActor = World->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+		if (!PolygonActor) continue;
+
+		// Add procedural mesh component
+		UProceduralMeshComponent* ProcMesh = NewObject<UProceduralMeshComponent>(PolygonActor);
+		ProcMesh->RegisterComponent();
+		ProcMesh->AttachToComponent(PolygonActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		ProcMesh->CreateMeshSection(0, Vertices, Triangles, ProcNormals, UVs, VertexColors, Tangents, true);
+
+		// Optional: enable collision
+		ProcMesh->ContainsPhysicsTriMeshData(true);
+
+		// Set material
+		UMaterialInterface* VertexColorMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/CityGenerator/Materials/M_VertexColor.M_VertexColor"));
+		ProcMesh->SetMaterial(0, VertexColorMat);
 	}
-
-	// Add the last segment to the end point
-	graph.AddNode(index + 1, end);
-	graph.AddEdge(index, index + 1);
 }
-*/
 
 void FCityGeneratorModule::ShutdownModule()
 {

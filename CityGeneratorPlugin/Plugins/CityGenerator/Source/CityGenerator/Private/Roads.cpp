@@ -3,8 +3,10 @@
 
 void RoadGraph::GenerateRoad(TArray<FVector2d> startpositions, float splitNumStart) {
 	nodes.Empty();
-	
+	// Generate points
 	auto points = boundaryPoints.GeneratePoints();
+
+	// Add nodes at all points
 	for (auto point : points.BoundaryPoints) {
 		Node* node = new Node();
 		node->id = nodes.Num();
@@ -20,22 +22,23 @@ void RoadGraph::GenerateRoad(TArray<FVector2d> startpositions, float splitNumSta
 		nodes[0]->neighbors.Add(nodes[nodes.Num() - 1]);
 		nodes[nodes.Num() - 1]->neighbors.Add(nodes[0]);
 	}
+	for (auto point : points.InnerPoints) {
+		if (points.BoundaryPoints.Contains(point)) {
+			continue;
+		}
+	
+		Node* node = new Node();
+		node->id = nodes.Num();
+		node->position = point;
+		nodes.Add(node);
+	}
 
-	//for (auto point : points.InnerPoints) {
-	//	if (points.BoundaryPoints.Contains(point)) {
-	//		continue;
-	//	}
-	//
-	//	Node* node = new Node();
-	//	node->id = nodes.Num();
-	//	node->position = point;
-	//	nodes.Add(node);
-	//}
-
-	// Connect nodes
+	// Connect nodes based on constraints
 	ConnectNodes();
-
+	// Split edges longer than 500 units
 	SplitEdges();
+	// Divide graph into faces
+	DivideFaces();
 }
 
 void RoadGraph::ConnectNodes() {
@@ -56,7 +59,6 @@ void RoadGraph::ConnectNodes() {
 		}
 
 		if (currentNode->neighbors.Num() < 4) {
-			UE_LOG(LogTemp, Warning, TEXT("Amount Node Neighbors: %d"), currentNode->neighbors.Num());
 			// Find nearby nodes
 			TArray<Node*> nearbyNodes;
 			for (Node* otherNode : nodes) {
@@ -65,8 +67,6 @@ void RoadGraph::ConnectNodes() {
 					nearbyNodes.Add(otherNode);
 				}
 			}
-
-			UE_LOG(LogTemp, Warning, TEXT("Nearby Nodes Found: %d"), nearbyNodes.Num());
 
 			TArray<Node*> candidates;
 			for (Node* nearbyNode : nearbyNodes) {
@@ -122,22 +122,8 @@ void RoadGraph::ConnectNodes() {
 			pickNewNode = true;
 		}
 	}
-
-	TArray<Node*> removeNodes;
-	//Delete nodes that only have one neightbor
-	for (auto node : nodes) {
-		if (node->neighbors.Num() == 1) {
-			removeNodes.Add(node);
-		}
-	}
-
-	for (auto nodeToRemove : removeNodes) {
-		for (auto neighbor : nodeToRemove->neighbors) {
-			neighbor->neighbors.Remove(nodeToRemove);
-		}
-		nodes.Remove(nodeToRemove);
-	}
 }
+
 bool RoadGraph::roadConstraints(Node& node1, Node& node2) {
 
 	// Check if already connected
@@ -191,6 +177,8 @@ bool RoadGraph::roadConstraints(Node& node1, Node& node2) {
 }
 
 void RoadGraph::SplitEdges() {
+	CleanNodes();
+
 	TArray<TPair<Node*, Node*>> edgesToSplit;
 
 	// Get edges to split
@@ -226,6 +214,137 @@ void RoadGraph::SplitEdges() {
 			newNode->neighbors.Add(neighbor);
 		}
 	}
+}
+
+void RoadGraph::CleanNodes() {
+	TArray<Node*> nodesToDelete;
+	for (Node* node : nodes) {
+		if (node->neighbors.Num() < 2) {
+			nodesToDelete.Add(node);
+			continue;
+		}
+	}
+	for (Node* nodeToDelete : nodesToDelete) {
+		for (Node* neighbor : nodeToDelete->neighbors) {
+			neighbor->neighbors.Remove(nodeToDelete);
+		}
+		nodes.Remove(nodeToDelete);
+	}
+}
+
+void RoadGraph::DivideFaces() {
+	//Create a set cointaining an edge,direction twice for each direction of the edge
+	faces.Empty();
+	directedEdges.Empty();
+
+	CleanNodes();
+
+	for (Node* node : nodes) {
+		for (Node* neighbor : node->neighbors) {
+			directedEdges.Add({node, neighbor});
+		}
+	}
+
+	while (!directedEdges.IsEmpty()) {
+		auto currentEdge = directedEdges[0];
+		auto startingNode = currentEdge.from;
+		UE_LOG(LogTemp, Warning, TEXT("starting Node %i"), startingNode->id);
+
+		TArray<Node*> face;
+		// Follow right most edge until we reach the starting edge again
+		while (currentEdge.to != startingNode) {
+			UE_LOG(LogTemp, Warning, TEXT("------------"));
+
+			UE_LOG(LogTemp, Warning, TEXT("Current edge: %d -> %d"), currentEdge.from->id, currentEdge.to->id);
+
+			FVector2d direction = (currentEdge.to->position - currentEdge.from->position).GetSafeNormal();
+			FVector2d right = FVector2d(-direction.Y, direction.X);  // Perpendicular to the right
+			// Get right most edge
+			DirectedEdge nextEdge = currentEdge;
+
+			TArray<Node*> rightNodes;
+
+			bool newEdgeFound = false; 
+			float biggestAngle = -0.1; 
+			for (Node* n : currentEdge.to->neighbors) {
+				// For each neighbor check if the n->position is to the right of the current direction
+				if (n->id == currentEdge.from->id) {
+					continue;
+				}
+				auto edgeToFind = DirectedEdge{currentEdge.to, n};
+				if (!directedEdges.Contains(edgeToFind)) {
+					continue;
+				}
+
+				FVector2d toNeighbor = (n->position - currentEdge.to->position).GetSafeNormal();
+				float angle = FMath::Acos(FVector2d::DotProduct(direction, toNeighbor));
+				//Check if toNeighbor is to the right of direction using cross product
+				if (FVector2d::CrossProduct(direction, toNeighbor) >= 0) {
+					rightNodes.Add(n);
+					if (angle > biggestAngle) {
+						biggestAngle = angle;
+						nextEdge = {currentEdge.to, n};
+						newEdgeFound = true;
+					}
+				}
+			}
+
+			// Print right nodes
+			FString rightNodeString = "Right nodes: ";
+			
+			// If no right edge found, pick the right most edge on the left side
+			float smallestAngle = PI + 0.1;
+			if (!newEdgeFound) {
+				// No right edge found look at the left side
+				for (Node* n : currentEdge.to->neighbors) {
+					// For each neighbor check if the n->position is to the right of the current direction
+					if (n->id == currentEdge.from->id) {
+						continue;
+					}
+
+					FVector2d toNeighbor = (n->position - currentEdge.to->position).GetSafeNormal();
+					float angle = FMath::Acos(FVector2d::DotProduct(direction, toNeighbor));
+					//Check if toNeighbor is to the left of direction using cross product
+					if (FVector2d::CrossProduct(direction, toNeighbor) <= 0) {
+						if (angle < smallestAngle) {
+							smallestAngle = angle;
+							nextEdge = {currentEdge.to, n};
+						}
+					}
+				}
+			}
+			//prrint next edge
+			if (currentEdge == nextEdge) {
+				UE_LOG(LogTemp, Warning, TEXT("No next edge found, stuck in loop"));
+				break;
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("Next edge: %d -> %d"), nextEdge.from->id, nextEdge.to->id);
+			face.Add(currentEdge.from);
+			directedEdges.Remove(currentEdge);
+			currentEdge = nextEdge;
+		}
+		face.Add(currentEdge.from);
+		directedEdges.Remove(currentEdge);
+		faces.Add(face);
+		UE_LOG(LogTemp, Warning, TEXT("--------"));
+
+	}
+
+	// Remove face that runs along the boundary  shoelace area
+	// Find the face with the most nodes
+	int outerFaceIndex = 0;
+	int maxNodes = faces[0].Num();
+
+	for (int i = 1; i < faces.Num(); i++) {
+		if (faces[i].Num() > maxNodes) {
+			maxNodes = faces[i].Num();
+			outerFaceIndex = i;
+		}
+	}
+
+	// Remove the outer face
+	faces.RemoveAt(outerFaceIndex);
 }
 
 BoundaryResult BoundaryPoints::GeneratePoints() {

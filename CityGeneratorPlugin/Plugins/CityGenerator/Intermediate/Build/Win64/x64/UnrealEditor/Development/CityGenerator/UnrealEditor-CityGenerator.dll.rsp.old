@@ -36,11 +36,11 @@
 /NODEFAULTLIB:"LIBCPD"
 /FUNCTIONPADMIN:6
 /NOIMPLIB
-"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Intermediate\Build\Win64\x64\CityGeneratorPluginEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
-"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Module.CityGenerator.cpp.obj"
-"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\CityGenerator.cpp.obj"
-"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Roads.cpp.obj"
-"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Default.rc2.res"
+"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Intermediate\Build\Win64\x64\CityGeneratorPluginEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
+"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Module.CityGenerator.cpp.obj"
+"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\CityGenerator.cpp.obj"
+"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Roads.cpp.obj"
+"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Default.rc2.res"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\CoreUObject\UnrealEditor-CoreUObject.lib"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\Engine\UnrealEditor-Engine.lib"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\Slate\UnrealEditor-Slate.lib"
@@ -72,6 +72,6 @@
 "synchronization.lib"
 "dwmapi.lib"
 "imm32.lib"
-/OUT:"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Plugins\CityGenerator\Binaries\Win64\UnrealEditor-CityGenerator.dll"
-/PDB:"C:\Users\flemm\Documents\Unreal Projects\CityGeneratorPlugin\Plugins\CityGenerator\Binaries\Win64\UnrealEditor-CityGenerator.pdb"
+/OUT:"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Binaries\Win64\UnrealEditor-CityGenerator.dll"
+/PDB:"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Binaries\Win64\UnrealEditor-CityGenerator.pdb"
 /ignore:4078

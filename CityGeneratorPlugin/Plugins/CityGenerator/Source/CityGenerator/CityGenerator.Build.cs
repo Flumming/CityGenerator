@@ -39,6 +39,7 @@ public class CityGenerator : ModuleRules
 				"Slate",
 				"SlateCore",
                 "ProceduralMeshComponent",
+                "GeometryCore",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

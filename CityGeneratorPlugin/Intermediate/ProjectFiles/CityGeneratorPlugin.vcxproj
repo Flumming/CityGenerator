@@ -67,7 +67,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{77762496-47BE-307C-8140-5E5C66986952}</ProjectGuid>
+    <ProjectGuid>{B770ECAA-5221-3896-B02D-0146349F94A0}</ProjectGuid>
     <RootNamespace>CityGeneratorPlugin</RootNamespace>
   </PropertyGroup>
   <Import Project="UECommon.props" />
