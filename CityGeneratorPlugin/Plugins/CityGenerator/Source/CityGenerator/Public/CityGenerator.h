@@ -22,5 +22,8 @@ private:
 	UClass* ActorClass;
 	UClass* ActorClass2;
 	UStaticMesh* CylinderMesh;
+
+
+
 	void SetupRoad();
 };

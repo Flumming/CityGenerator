@@ -12,6 +12,8 @@ struct Node{
 	FVector2d position;
 	TArray<Node*> neighbors;
 
+	int depth;
+
 	bool operator==(const Node& other) const {
 		return id == other.id;
 	}
@@ -33,13 +35,15 @@ struct BoundaryResult {
 
 class BoundaryPoints {
 public:
-	BoundaryResult GeneratePoints();
+	BoundaryResult GeneratePoints(int iteration, TArray<float> roadSize);
+	void GenerateBoundary(FVector2D center, FVector2D radii, int numPoints, float variation);
+
 	TArray<FVector2D> points;
 	TArray<FVector2D> openList;
+	TArray<FVector2D> boundary;
+
 private:
-	TArray<FVector2d> boundary;
-	void GenerateBoundary(FVector2D center, FVector2D radii, int numPoints, float variation);
-	FVector2d RandomPointInBoundary();
+	FVector2d RandomPointInBoundary(TArray<float> roadSize, int iteration);
 
 };
 
@@ -55,22 +59,31 @@ private:
 
 class RoadGraph {
 public:
-	SeedPoints seedPoints;
-	BoundaryPoints boundaryPoints;
-
 	void GenerateRoad(TArray<FVector2d> startpositions, float splitNumStart);
-	TArray<Node*> nodes;
-	TArray<Node*> tempNodes;
 
-	TArray<TArray<Node*>> faces;
+	TArray<Node*> outNodes;
+	TArray<TArray<Node*>> outFaces;
+
+	TArray<float> roadSize;
 
 private:
-	void ConnectNodes();
-	bool roadConstraints(Node& node1, Node& node2);
+	void GenerateNodes(
+		TArray<Node*>& nodes,
+		int iteration,
+		TArray<Node*> inputBoundary,
+		TMap<FVector2D, Node*>& existingNodes
+	);
+	void ConnectNodes(TArray<Node*>& nodes, int iteration);
+	bool roadConstraints(TArray<Node*>& nodes, Node& node1, Node& node2);
 
-	void SplitEdges();
-	void CleanNodes();
-	void DivideFaces();
+	void SplitEdges(TArray<Node*>& nodes, int iteration, TMap<FVector2D, Node*>& existingNodes);
+	void CleanNodes(TArray<Node*>& nodes);
+	void DivideFaces(TArray<Node*>& nodes, TArray<TArray<Node*>>& faces);
 
-	TArray<DirectedEdge> directedEdges;
+	void RemoveDuplicatesByID();
+
+	Node* GetOrCreateNode(const FVector2D& position, int depth, TMap<FVector2D, Node*>& existingNodes);
+
+	int IDCounter = 0;
+	float size = 50000.0f;
 };
