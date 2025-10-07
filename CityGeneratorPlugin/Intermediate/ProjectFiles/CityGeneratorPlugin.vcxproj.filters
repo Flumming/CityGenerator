@@ -48,6 +48,9 @@
     <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Private\CityGenerator.cpp">
       <Filter>Plugins\CityGenerator\Source\CityGenerator\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Private\CityGeneratorActor.cpp">
+      <Filter>Plugins\CityGenerator\Source\CityGenerator\Private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Private\Roads.cpp">
       <Filter>Plugins\CityGenerator\Source\CityGenerator\Private</Filter>
     </ClCompile>
@@ -55,6 +58,9 @@
       <UniqueIdentifier>{E756F643-8696-3D53-89A8-E698B5B06A1A}</UniqueIdentifier>
     </Filter>
     <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Public\CityGenerator.h">
+      <Filter>Plugins\CityGenerator\Source\CityGenerator\Public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Public\CityGeneratorActor.h">
       <Filter>Plugins\CityGenerator\Source\CityGenerator\Public</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Plugins\CityGenerator\Source\CityGenerator\Public\Roads.h">

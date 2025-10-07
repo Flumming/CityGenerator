@@ -289,6 +289,7 @@
 /I "..\Plugins\Runtime\ProceduralMeshComponent\Intermediate\Build\Win64\UnrealEditor\Inc\ProceduralMeshComponent\UHT"
 /I "..\Plugins\Runtime\ProceduralMeshComponent\Source"
 /I "..\Plugins\Runtime\ProceduralMeshComponent\Source\ProceduralMeshComponent\Public"
+/I "C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\UnrealEditor\Inc\CityGenerator\UHT"
 /I "C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Source"
 /I "C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Source\CityGenerator\Public"
 /external:W0

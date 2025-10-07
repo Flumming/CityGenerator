@@ -23,6 +23,7 @@ void RoadGraph::GenerateRoad(TArray<FVector2d> startpositions, float splitNumSta
 
 	outNodes = nodes;	
 
+	
 	for (auto face : faces) {
 		TArray<Node*> newNodes;
 		TArray<TArray<Node*>> newFaces;
@@ -32,6 +33,7 @@ void RoadGraph::GenerateRoad(TArray<FVector2d> startpositions, float splitNumSta
 
 		outNodes.Append(newNodes);
 	}
+	
 
 	RemoveDuplicatesByID();
 
@@ -112,8 +114,13 @@ void RoadGraph::GenerateNodes(
 	for (int i = 0; i < nodes.Num(); i++) {
 		Node* node = nodes[i];
 		Node* next = nodes[(i + 1) % nodes.Num()];
-		if (!node->neighbors.Contains(next)) node->neighbors.Add(next);
-		if (!next->neighbors.Contains(node)) next->neighbors.Add(node);
+
+		Neighbor nodeN = {nodes[i], static_cast<ERoadType>(iteration)};
+		Neighbor nextN = {next, static_cast<ERoadType>(iteration)};
+
+
+		if (!node->neighbors.Contains(next)) node->neighbors.Add(nextN);
+		if (!next->neighbors.Contains(node)) next->neighbors.Add(nodeN);
 	}
 
 	// Add inner points
@@ -189,8 +196,11 @@ void RoadGraph::ConnectNodes(TArray<Node*>& nodes, int iteration) {
 
 				if (chosenNode->neighbors.Num() < 4 || (chosenNode->neighbors.Num() != 1 && FMath::FRandRange(0.0f, 1.0f) >= 0.5)) {
 					// Connect nodes
-					currentNode->neighbors.Add(chosenNode);
-					chosenNode->neighbors.Add(currentNode);
+					Neighbor chosenNodeN = {chosenNode, static_cast<ERoadType>(iteration)};
+					Neighbor currentNodeN = {currentNode, static_cast<ERoadType>(iteration)};
+
+					currentNode->neighbors.Add(chosenNodeN);
+					chosenNode->neighbors.Add(currentNodeN);
 					pickNewNode = false;
 					tempNodes.Remove(currentNode);
 					currentNode = chosenNode;
@@ -236,9 +246,11 @@ bool RoadGraph::roadConstraints(TArray<Node*>& nodes, Node& node1, Node& node2) 
 	}
 
 	// Check if connecting these nodes creates a triangle
-	for (Node* neighbor1 : node1.neighbors) {
-		for (Node* neighbor2 : node2.neighbors) {
-			if (neighbor1->id == neighbor2->id) {
+	for (Neighbor neighbor1 : node1.neighbors) {
+		auto neighborN1 = neighbor1.node;
+		for (Neighbor neighbor2 : node2.neighbors) {
+			auto neighborN2 = neighbor2.node;
+			if (neighborN1->id == neighborN2->id) {
 				return false;
 			}
 		}
@@ -246,9 +258,10 @@ bool RoadGraph::roadConstraints(TArray<Node*>& nodes, Node& node1, Node& node2) 
 
 	// Check for angle between node1, node2 and node1, its neighbours
 	float minAngleDegrees = 60.0f;
-	for (Node* neighbor : node1.neighbors) {
+	for (Neighbor neighbor : node1.neighbors) {
+		auto neighborN = neighbor.node;
 		FVector2D vec1 = FVector2D(node2.position) - FVector2D(node1.position);
-		FVector2D vec2 = FVector2D(neighbor->position) - FVector2D(node1.position);
+		FVector2D vec2 = FVector2D(neighborN->position) - FVector2D(node1.position);
 		vec1.Normalize();
 		vec2.Normalize();
 		float dotProduct = FVector2D::DotProduct(vec1, vec2);
@@ -261,8 +274,10 @@ bool RoadGraph::roadConstraints(TArray<Node*>& nodes, Node& node1, Node& node2) 
 
 	// Check for crossing with existing roads
 	for (Node* n : nodes) {
-		for (Node* neighbor : n->neighbors) {
-			if (n->id == node1.id || n->id == node2.id || neighbor->id == node1.id || neighbor->id == node2.id) {
+		for (Neighbor neighbor : n->neighbors) {
+			auto neighborN = neighbor.node;	
+
+			if (n->id == node1.id || n->id == node2.id || neighborN->id == node1.id || neighborN->id == node2.id) {
 				continue;
 			}
 			FVector intersection;
@@ -270,8 +285,9 @@ bool RoadGraph::roadConstraints(TArray<Node*>& nodes, Node& node1, Node& node2) 
 				FVector(node1.position.X, node1.position.Y, 0.0),
 				FVector(node2.position.X, node2.position.Y, 0.0),
 				FVector(n->position.X, n->position.Y, 0.0),
-				FVector(neighbor->position.X, neighbor->position.Y, 0.0),
-				intersection)) {
+				FVector(neighborN->position.X, neighborN->position.Y, 0.0),
+				intersection)) 
+			{
 				UE_LOG(LogTemp, Warning, TEXT("Intersection at: %s"), *intersection.ToString());
 				return false;
 			}
@@ -306,10 +322,12 @@ void RoadGraph::SplitEdges(TArray<Node*>& nodes, int iteration, TMap<FVector2D, 
 
 	TArray<TPair<Node*, Node*>> edgesToSplit;
 
+	// Collect edges
 	for (auto node : nodes) {
-		for (auto neighbor : node->neighbors) {
-			if (node->id < neighbor->id) {
-				edgesToSplit.Add({node, neighbor});
+		for (auto& neighborStruct : node->neighbors) {
+			Node* neighborNode = neighborStruct.node;
+			if (node->id < neighborNode->id) {
+				edgesToSplit.Add({node, neighborNode});
 			}
 		}
 	}
@@ -324,15 +342,22 @@ void RoadGraph::SplitEdges(TArray<Node*>& nodes, int iteration, TMap<FVector2D, 
 
 			Node* newNode = GetOrCreateNode(midPoint, iteration, existingNodes);
 
-			// Remove old connection
-			node->neighbors.Remove(neighbor);
-			neighbor->neighbors.Remove(node);
+			// Remove old connections
+			node->neighbors.RemoveAll([neighbor](const Neighbor& n) { return n.node == neighbor; });
+			neighbor->neighbors.RemoveAll([node](const Neighbor& n) { return n.node == node; });
 
 			// Add new connections
-			if (!node->neighbors.Contains(newNode)) node->neighbors.Add(newNode);
-			if (!newNode->neighbors.Contains(node)) newNode->neighbors.Add(node);
-			if (!neighbor->neighbors.Contains(newNode)) neighbor->neighbors.Add(newNode);
-			if (!newNode->neighbors.Contains(neighbor)) newNode->neighbors.Add(neighbor);
+			auto addNeighbor = [](Node* src, Node* dest, ERoadType type) {
+				Neighbor n{dest, type};
+				if (!src->neighbors.Contains(n)) {
+					src->neighbors.Add(n);
+				}
+			};
+
+			addNeighbor(node, newNode, static_cast<ERoadType>(iteration));
+			addNeighbor(newNode, node, static_cast<ERoadType>(iteration));
+			addNeighbor(neighbor, newNode, static_cast<ERoadType>(iteration));
+			addNeighbor(newNode, neighbor, static_cast<ERoadType>(iteration));
 
 			if (!nodes.Contains(newNode)) nodes.Add(newNode);
 		}
@@ -342,15 +367,20 @@ void RoadGraph::SplitEdges(TArray<Node*>& nodes, int iteration, TMap<FVector2D, 
 
 void RoadGraph::CleanNodes(TArray<Node*>& nodes) {
 	TArray<Node*> nodesToDelete;
+
+	// Find nodes with less than 2 neighbors
 	for (Node* node : nodes) {
 		if (node->neighbors.Num() < 2) {
 			nodesToDelete.Add(node);
 			continue;
 		}
 	}
+
+	// Remove connections and nodes
 	for (Node* nodeToDelete : nodesToDelete) {
-		for (Node* neighbor : nodeToDelete->neighbors) {
-			neighbor->neighbors.Remove(nodeToDelete);
+		for (Neighbor& neighbor : nodeToDelete->neighbors) {
+			Node* neighborNode = neighbor.node;
+			neighborNode->neighbors.Remove({nodeToDelete, neighbor.roadType});
 		}
 		nodes.Remove(nodeToDelete);
 	}
@@ -363,8 +393,9 @@ void RoadGraph::DivideFaces(TArray<Node*>& nodes, TArray<TArray<Node*>>& faces) 
 	CleanNodes(nodes);
 
 	for (Node* node : nodes) {
-		for (Node* neighbor : node->neighbors) {
-			directedEdges.Add({node, neighbor});
+		for (Neighbor neighbor : node->neighbors) {
+			Node* neighborNode = neighbor.node;
+			directedEdges.Add({node, neighborNode});
 		}
 	}
 
@@ -383,7 +414,8 @@ void RoadGraph::DivideFaces(TArray<Node*>& nodes, TArray<TArray<Node*>>& faces) 
 
 			bool newEdgeFound = false;
 			float biggestAngle = -0.1;
-			for (Node* n : currentEdge.to->neighbors) {
+			for (Neighbor neighbor : currentEdge.to->neighbors) {
+				Node* n = neighbor.node;
 				// For each neighbor check if the n->position is to the right of the current direction
 				if (n->id == currentEdge.from->id) continue;
 				auto edgeToFind = DirectedEdge{currentEdge.to, n};
@@ -407,7 +439,8 @@ void RoadGraph::DivideFaces(TArray<Node*>& nodes, TArray<TArray<Node*>>& faces) 
 			float smallestAngle = PI + 0.1;
 			if (!newEdgeFound) {
 				// No right edge found look at the left side
-				for (Node* n : currentEdge.to->neighbors) {
+				for (Neighbor neighbors : currentEdge.to->neighbors) {
+					Node* n = neighbors.node;
 					// For each neighbor check if the n->position is to the right of the current direction
 					if (n->id == currentEdge.from->id) continue;
 					auto edgeToFind = DirectedEdge{currentEdge.to, n};

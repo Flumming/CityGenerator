@@ -1,0 +1,17 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\private\\citygeneratoractor.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\intermediate\\build\\win64\\x64\\citygeneratorplugineditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\citygenerator\\definitions.citygenerator.h",
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\public\\citygeneratoractor.h",
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\public\\citygenerator.h",
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\public\\roads.h",
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\intermediate\\build\\win64\\unrealeditor\\inc\\citygenerator\\uht\\citygeneratoractor.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

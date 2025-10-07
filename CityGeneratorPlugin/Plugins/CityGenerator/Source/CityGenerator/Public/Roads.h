@@ -2,20 +2,41 @@
 
 #include "CoreMinimal.h"
 
+enum class ERoadType {
+	MainRoad,
+	SecondaryRoad,
+	SmallRoad
+};
+
 struct SeedNode {
 	FVector2D position;
 	float splitNum;
 };
 
+struct Neighbor;
+
 struct Node{
 	int id;
 	FVector2d position;
-	TArray<Node*> neighbors;
+	TArray<Neighbor> neighbors;
 
 	int depth;
 
 	bool operator==(const Node& other) const {
 		return id == other.id;
+	}
+};
+
+struct Neighbor{
+	Node* node;
+	ERoadType roadType;
+
+	FORCEINLINE bool operator==(const Neighbor& other) const {
+		return node == other.node && roadType == other.roadType;
+	}
+
+	FORCEINLINE bool operator==(const Node* otherNode) const {
+		return node == otherNode;
 	}
 };
 
@@ -63,8 +84,7 @@ public:
 
 	TArray<Node*> outNodes;
 	TArray<TArray<Node*>> outFaces;
-
-	TArray<float> roadSize;
+	float size = 50000.0f;
 
 private:
 	void GenerateNodes(
@@ -81,9 +101,8 @@ private:
 	void DivideFaces(TArray<Node*>& nodes, TArray<TArray<Node*>>& faces);
 
 	void RemoveDuplicatesByID();
-
 	Node* GetOrCreateNode(const FVector2D& position, int depth, TMap<FVector2D, Node*>& existingNodes);
 
 	int IDCounter = 0;
-	float size = 50000.0f;
+	TArray<float> roadSize;
 };
