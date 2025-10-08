@@ -8,11 +8,6 @@ enum class ERoadType {
 	SmallRoad
 };
 
-struct SeedNode {
-	FVector2D position;
-	float splitNum;
-};
-
 struct Neighbor;
 
 struct Node{
@@ -39,6 +34,7 @@ struct Neighbor{
 		return node == otherNode;
 	}
 };
+
 
 struct DirectedEdge {
 	Node* from;
@@ -68,6 +64,10 @@ private:
 
 };
 
+struct SeedNode {
+	FVector2D position;
+	float splitNum;
+};
 class SeedPoints {
 public:
 	TArray<Node*> GenerateSeedPoints(TArray<FVector2d> startpositions, float splitNumStart);

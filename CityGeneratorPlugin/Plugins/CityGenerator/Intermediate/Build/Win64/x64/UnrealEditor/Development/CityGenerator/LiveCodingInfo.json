@@ -2,11 +2,11 @@
 	"RemapUnityFiles": 
 	{
 		"Module.CityGenerator.cpp.obj": [
-			"PerModuleInline.gen.cpp.obj",
 			"CityGenerator.init.gen.cpp.obj",
 			"CityGeneratorActor.gen.cpp.obj",
-			"CityGenerator.cpp.obj",
+			"PerModuleInline.gen.cpp.obj",
 			"CityGeneratorActor.cpp.obj",
+			"CityGenerator.cpp.obj",
 			"Roads.cpp.obj"
 		]
 	}

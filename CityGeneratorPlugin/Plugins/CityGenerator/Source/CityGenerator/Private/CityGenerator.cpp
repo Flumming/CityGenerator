@@ -55,7 +55,7 @@ void CityGenerator::GenerateCity(float size) {
 void CityGenerator::GenerateRoads(float size) {
 	roadGraph.size = size;
 
-	TArray<FVector2d> startpositions;
+	TArray<FVector2d> startpositions = {FVector2d(0.0f, 0.0f)};
 	roadGraph.GenerateRoad(startpositions, 3.0f);
 
 	TArray<TArray<FVector>> intersectionRoads;
@@ -193,7 +193,7 @@ void CityGenerator::GenerateRoads(float size) {
 			CreateProceduralMesh(vertices, triangles, RoadMat, uvs);
 		}
 	}
-
+	
 	// Create intersections
 	for (auto intersectionRoad : intersectionRoads) {
 		TArray<int32> triangles = {0, 2, 1, 0, 3, 2};
@@ -221,6 +221,8 @@ void CityGenerator::GenerateRoads(float size) {
 		CreateProceduralMesh(intersection, triangles, AsphaltMat, uvs);
 	}
 
+	TArray<TArray<FVector>> faceVertices;
+	
 	for (auto face : roadGraph.outFaces) {
 
 		TArray<FVector> vertices;
@@ -280,6 +282,9 @@ void CityGenerator::GenerateRoads(float size) {
 			}
 		}
 
+		faceVertices.Add(vertices);
+
+		/*
 		TArray<UE::Geometry::FIndex3i> triangles3i;
 		PolygonTriangulation::TriangulateSimplePolygon(vertices, triangles3i);
 		TArray<int32> triangles;
@@ -296,7 +301,218 @@ void CityGenerator::GenerateRoads(float size) {
 			uvs.Add(FVector2D(vertices[j].X / 400.0f, vertices[j].Y / 400.0f));
 		}
 		CreateProceduralMesh(vertices, triangles, VertexColorMat, uvs, FaceColor, true);
+		*/
 	}
+
+	// Create sidewalks
+
+	TArray<TArray<FVector>> newFaces;
+
+	for (auto face : faceVertices) {
+		TArray<TArray<FVector>> sidewalks;
+		int numVertices = face.Num();
+		float sidewalkWidth = 200.0f;
+
+		TArray<FVector> newFace;
+
+		for (int i = 0; i < numVertices; i++) {
+			TArray<FVector> sidewalk;
+
+			FVector prev = face[(i - 1 + numVertices) % numVertices];
+			FVector curr = face[i];
+			FVector next = face[(i + 1) % numVertices];
+			FVector nextNext = face[(i + 2) % numVertices];
+
+			FVector currPrevDir = (prev - curr).GetSafeNormal();
+			FVector currNextDir = (next - curr).GetSafeNormal();
+			FVector nextCurrDir = -currNextDir;
+			FVector nextNextDir = (nextNext - next).GetSafeNormal();
+			
+			sidewalk.Add(curr);
+			sidewalk.Add(next);
+			
+			//FVector currInward = (currPrevDir + currNextDir).GetSafeNormal();
+			//FVector nextInward = (nextCurrDir + nextNextDir).GetSafeNormal();
+
+			FVector corner1;
+			{
+				FVector currToNextNext = (nextNext - curr).GetSafeNormal();
+			
+				FVector prevDir = nextCurrDir;
+				FVector nextDir = nextNextDir;
+
+				FVector prevDirRotated = FVector(prevDir.Y, -prevDir.X, 0.0f);
+				FVector nextDirRotated = FVector(-nextDir.Y, nextDir.X, 0.0f);
+
+				FVector prevPoint = next + prevDirRotated * sidewalkWidth;
+				FVector nextPoint = next + nextDirRotated * sidewalkWidth;
+
+				if (FVector::CrossProduct(currToNextNext, next - curr).Z < 0) {					
+					//convex corner
+					FVector prevEndPoint = prevPoint + prevDir * 1000.0f;
+					FVector nextEndPoint = nextPoint + nextDir * 1000.0f;
+					FVector intersection;
+					if (FMath::SegmentIntersection2D(prevPoint, prevEndPoint, nextPoint, nextEndPoint, intersection)) {
+						corner1 = intersection;
+					}
+					else {
+						corner1 = next + nextDirRotated * sidewalkWidth;
+					}
+					
+				}
+				else {
+					FVector prevEndPoint = prevPoint - prevDir * 1000.0f;
+					FVector nextEndPoint = nextPoint - nextDir * 1000.0f;
+					FVector intersection;
+					if (FMath::SegmentIntersection2D(prevPoint, prevEndPoint, nextPoint, nextEndPoint, intersection)) {
+						corner1 = intersection;
+					}
+					else {
+						corner1 = next + nextDirRotated * sidewalkWidth;
+					}
+				}
+			}
+
+			FVector corner2;
+			{
+				/*
+				FVector prevToNext = (next - prev).GetSafeNormal();
+				FVector prevDir = currPrevDir;
+				FVector nextDir = currNextDir;
+
+				// Rotate prevDir counter clockwise 90 degrees
+				FVector prevDirRotated = FVector(-prevDir.Y, prevDir.X, 0.0f);
+				// Rotate nextDir clockwise 90 degrees
+				FVector nextDirRotated = FVector(nextDir.Y, -nextDir.X, 0.0f);
+
+				FVector prevPoint = curr + prevDirRotated * sidewalkWidth;
+				FVector nextPoint = curr + nextDirRotated * sidewalkWidth;
+
+				if (FVector::CrossProduct(prevToNext, curr - prev).Z < 0) {
+					//convex corner
+					//Check intersection between line from prevPoint in direction of prevDir and nextPoint in direction of nextDir
+					FVector prevEndPoint = prevPoint + prevDir * 1000.0f;
+					FVector nextEndPoint = nextPoint + nextDir * 1000.0f;
+					FVector intersection;
+					if (FMath::SegmentIntersection2D(prevPoint, prevEndPoint, nextPoint, nextEndPoint, intersection)) {
+						corner1 = intersection;
+					}
+					else {
+						//corner1 = next + nextInward * sidewalkWidth;
+					}
+				}
+				else {
+					//concave corner
+					FVector prevEndPoint = prevPoint - prevDir * 1000.0f;
+					FVector nextEndPoint = nextPoint - nextDir * 1000.0f;
+					FVector intersection;
+					if (FMath::SegmentIntersection2D(prevPoint, prevEndPoint, nextPoint, nextEndPoint, intersection)) {
+						corner2 = intersection;
+					}
+					else {
+						//corner1 = next + nextInward * sidewalkWidth;
+					}
+				}
+				*/
+				FVector prevToNext = (next - prev).GetSafeNormal();
+
+				FVector prevDir = currPrevDir;
+				FVector nextDir = currNextDir;
+
+				FVector prevDirRotated = FVector(prevDir.Y, -prevDir.X, 0.0f);
+				FVector nextDirRotated = FVector(-nextDir.Y, nextDir.X, 0.0f);
+
+				FVector prevPoint = curr + prevDirRotated * sidewalkWidth;
+				FVector nextPoint = curr + nextDirRotated * sidewalkWidth;
+
+				if (FVector::CrossProduct(prevToNext, curr - prev).Z < 0) {
+					//convex corner
+					FVector prevEndPoint = prevPoint + prevDir * 1000.0f;
+					FVector nextEndPoint = nextPoint + nextDir * 1000.0f;
+					FVector intersection;
+					if (FMath::SegmentIntersection2D(prevPoint, prevEndPoint, nextPoint, nextEndPoint, intersection)) {
+						corner2 = intersection;
+					}
+					else {
+						corner2 = curr + nextDirRotated * sidewalkWidth;
+					}
+				}
+				else {
+					//concave corner
+					FVector prevEndPoint = prevPoint - prevDir * 1000.0f;
+					FVector nextEndPoint = nextPoint - nextDir * 1000.0f;
+					FVector intersection;
+					if (FMath::SegmentIntersection2D(prevPoint, prevEndPoint, nextPoint, nextEndPoint, intersection)) {
+						corner2 = intersection;
+					}
+					else {
+						corner2 = curr + nextDirRotated * sidewalkWidth;
+					}					
+				}
+			}
+			
+
+			sidewalk.Add(corner1);
+			sidewalk.Add(corner2);
+
+			sidewalks.Add(sidewalk);
+
+			newFace.Add(corner1);
+		}
+
+		for (auto sidewalk : sidewalks) {
+			TArray<int32> triangles = {0, 2, 1, 0, 3, 2};
+			UMaterialInterface* sideWalkMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/CityGenerator/Materials/M_Sidewalk.M_Sidewalk"));
+			TArray<FVector2D> uvs;
+
+			for (int j = 0; j < sidewalk.Num(); j++) {
+				uvs.Add(FVector2D(sidewalk[j].X / 50.0f, sidewalk[j].Y / 50.0f));
+				sidewalk[j] = FVector(sidewalk[j].X, sidewalk[j].Y, 10.0f);
+			}
+			CreateProceduralMesh(sidewalk, triangles, sideWalkMat, uvs);
+
+			TArray<FVector> sidewalkSide;
+			sidewalkSide.Add(sidewalk[1]);
+			sidewalkSide.Add(sidewalk[0]);
+			sidewalkSide.Add(FVector(sidewalk[0].X, sidewalk[0].Y, 0.0f));
+			sidewalkSide.Add(FVector(sidewalk[1].X, sidewalk[1].Y, 0.0f));
+			TArray<int32> sideTriangles = {0, 2, 1, 0, 3, 2};
+			TArray<FVector2D> sideUVs;
+			float segmentLength = ((sidewalkSide[1] - sidewalkSide[0]).Size()) / 25.0f;
+			float height = (sidewalkSide[1].Z - sidewalkSide[2].Z) / 25.0f;
+
+			sideUVs.Add(FVector2D(0, height));
+			sideUVs.Add(FVector2D(segmentLength, height));
+			sideUVs.Add(FVector2D(segmentLength, 0));
+			sideUVs.Add(FVector2D(0, 0));          
+			
+				
+			CreateProceduralMesh(sidewalkSide, sideTriangles, sideWalkMat, sideUVs);
+		}
+		newFaces.Add(newFace);
+	}
+
+	
+	for (auto face : newFaces) {
+		TArray<UE::Geometry::FIndex3i> triangles3i;
+		PolygonTriangulation::TriangulateSimplePolygon(face, triangles3i);
+		TArray<int32> triangles;
+		for (auto tri : triangles3i) {
+			triangles.Add(tri.A);
+			triangles.Add(tri.B);
+			triangles.Add(tri.C);
+		}
+
+		UMaterialInterface* VertexColorMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/CityGenerator/Materials/M_VertexColor.M_VertexColor"));
+		FColor FaceColor = FColor::MakeRandomColor();
+		TArray<FVector2D> uvs;
+		for (int j = 0; j < face.Num(); j++) {
+			uvs.Add(FVector2D(face[j].X / 400.0f, face[j].Y / 400.0f));
+			face[j] = FVector(face[j].X, face[j].Y, 10.0f);
+		}
+		CreateProceduralMesh(face, triangles, VertexColorMat, uvs, FaceColor, true);
+	}
+	
 }
 
 void CityGenerator::CreateProceduralMesh(
