@@ -11,10 +11,13 @@
             "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\public\\citygeneratoractor.h",
             "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\public\\citygenerator.h",
             "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\public\\roads.h",
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\public\\buildings.h",
             "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\intermediate\\build\\win64\\unrealeditor\\inc\\citygenerator\\uht\\citygeneratoractor.generated.h",
             "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\citygenerator\\permoduleinline.gen.cpp",
             "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\core\\public\\hal\\permoduleinline.inl",
-            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\private\\citygeneratoractor.cpp"
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\private\\citygeneratoractor.cpp",
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\private\\roads.cpp",
+            "c:\\program files\\epic games\\ue_5.5\\engine\\source\\runtime\\engine\\public\\geomtools.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

@@ -4,6 +4,7 @@
 
 #include "Modules/ModuleManager.h"
 #include "Roads.h"
+#include "Buildings.h"
 
 class FCityGeneratorModule : public IModuleInterface
 {
@@ -32,8 +33,10 @@ public:
 private:
 	UWorld* World;
 	RoadGraph roadGraph;
+	BuildingGenerator buildingGenerator;
 
 	void GenerateRoads(float size);
+	void GenerateSidewalks();
 	void CreateProceduralMesh(const TArray<FVector>& Vertices,
 							  const TArray<int32>& Triangles,
 							  UMaterialInterface* Material,
@@ -41,6 +44,13 @@ private:
 							  const FColor InVertexColor = FColor::White,
 							  bool bEnableCollision = true);
 
-	//List of all road meshes
-	TArray<AActor*> roadMeshes;
+	void GenerateBuildings();
+
+	//List of all meshes
+	TArray<AActor*> meshes;
+	TArray<TArray<FVector2D>> cityBlocks;
+
+	TArray<BuildingFootprint> buildings;
+
+	float smallRoadChange;
 };

@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\private\\buildings.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\intermediate\\build\\win64\\x64\\citygeneratorplugineditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\citygenerator\\definitions.citygenerator.h",
+            "c:\\users\\flemm\\documents\\unreal projects\\citygenerator\\citygeneratorplugin\\plugins\\citygenerator\\source\\citygenerator\\public\\buildings.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

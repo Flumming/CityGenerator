@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CityGeneratorPluginModuleRules")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Development")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d4c7aaabe24659a3b10d3a90422145695065e3b5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb2a10cc12d092d9cd712c4f2b43b923194ef6a9")]
 [assembly: System.Reflection.AssemblyProductAttribute("CityGeneratorPluginModuleRules")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CityGeneratorPluginModuleRules")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

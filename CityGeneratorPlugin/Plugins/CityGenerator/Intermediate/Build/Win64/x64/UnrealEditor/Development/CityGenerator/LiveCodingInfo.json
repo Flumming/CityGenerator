@@ -6,8 +6,9 @@
 			"CityGeneratorActor.gen.cpp.obj",
 			"PerModuleInline.gen.cpp.obj",
 			"CityGeneratorActor.cpp.obj",
-			"CityGenerator.cpp.obj",
-			"Roads.cpp.obj"
+			"Roads.cpp.obj",
+			"Buildings.cpp.obj",
+			"CityGenerator.cpp.obj"
 		]
 	}
 }
