@@ -39,7 +39,7 @@
 /NATVIS:"..\Intermediate\Build\Win64\x64\UnrealEditor\Development\GeometryCore\GeometryCore.natvis"
 "C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Intermediate\Build\Win64\x64\CityGeneratorPluginEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
 "C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Module.CityGenerator.cpp.obj"
-"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\CityGenerator.cpp.obj"
+"C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Buildings.cpp.obj"
 "C:\Users\flemm\Documents\Unreal Projects\CityGenerator\CityGeneratorPlugin\Plugins\CityGenerator\Intermediate\Build\Win64\x64\UnrealEditor\Development\CityGenerator\Default.rc2.res"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\CoreUObject\UnrealEditor-CoreUObject.lib"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\Engine\UnrealEditor-Engine.lib"

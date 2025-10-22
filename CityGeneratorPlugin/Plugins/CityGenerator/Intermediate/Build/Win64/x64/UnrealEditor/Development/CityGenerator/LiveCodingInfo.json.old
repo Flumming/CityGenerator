@@ -5,9 +5,10 @@
 			"CityGenerator.init.gen.cpp.obj",
 			"CityGeneratorActor.gen.cpp.obj",
 			"PerModuleInline.gen.cpp.obj",
+			"CityGenerator.cpp.obj",
 			"CityGeneratorActor.cpp.obj",
 			"Roads.cpp.obj",
-			"CityGenerator.cpp.obj"
+			"Buildings.cpp.obj"
 		]
 	}
 }

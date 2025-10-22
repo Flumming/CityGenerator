@@ -44,9 +44,7 @@ void FCityGeneratorModule::ShutdownModule()
 void CityGenerator::GenerateCity(float size) {
 	// Clear previous road meshes
 	for (AActor* actor : meshes) {
-		if (actor) {
-			actor->Destroy();
-		}
+		actor->Destroy();
 	}
 	meshes.Empty();
 
@@ -505,38 +503,97 @@ void CityGenerator::CreateProceduralMesh(
 
 	if (Material) {
 		ProcMesh->SetMaterial(0, Material);
-	}
-
+	}	
 	meshes.Add(PolygonActor);
 }
 
 void CityGenerator::GenerateBuildings() {
 	for (auto cityBlock : cityBlocks) {
-		TArray< BuildingFootprint> newBuildings = buildingGenerator.GenerateBuildings(cityBlock, 10.0f);
+		// Generate buildings inside the block
+		TArray<BuildingFootprint> newBuildings = buildingGenerator.GenerateBuildings(cityBlock);
 		buildings.Append(newBuildings);
-	}
 
-	TArray<TArray<FVector>> newFaces;
-	for (auto building : buildings) {
-		TArray<FVector> face;
-		for (auto vert : building.vertices) {
-			face.Add(FVector(vert.X, vert.Y, 10.0f));
+		// Create a sidewalk plane for this city block
+		TArray<FVector> blockVerts;
+		for (auto vert : cityBlock) {
+			blockVerts.Add(FVector(vert.X, vert.Y, 10.0f));
 		}
-		newFaces.Add(face);
+
+		// Triangulate the polygon to form the surface
+		TArray<UE::Geometry::FIndex3i> triangles3i;
+		PolygonTriangulation::TriangulateSimplePolygon(blockVerts, triangles3i);
+		TArray<int32> triangles;
+		for (auto tri : triangles3i) {
+			triangles.Add(tri.A);
+			triangles.Add(tri.B);
+			triangles.Add(tri.C);
+		}
+
+		FColor sidewalkColor = FColor(
+			FMath::RandRange(180, 230),
+			FMath::RandRange(180, 230),
+			FMath::RandRange(180, 230),
+			255
+		);
+
+		UMaterialInterface* sideWalkMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/CityGenerator/Materials/M_Sidewalk.M_Sidewalk"));
+
+		TArray<FVector2D> uvs;
+		for (int j = 0; j < blockVerts.Num(); j++) {
+			uvs.Add(FVector2D(blockVerts[j].X / 50.0f, blockVerts[j].Y / 50.0f));
+		}
+		CreateProceduralMesh(blockVerts, triangles, sideWalkMat, uvs, sidewalkColor, true);
 	}
 
-	for (auto face : newFaces) {
+	for (auto building : buildings) {
+		const float height = building.height;
+		const TArray<FVector2D>& verts2D = building.vertices;
+
+		// --- Prepare roof face ---
+		TArray<FVector> roofVerts;
+		for (auto vert : verts2D)
+			roofVerts.Add(FVector(vert.X, vert.Y, height));
+
+		// Triangles for a simple quad
 		TArray<int32> triangles = {0, 2, 1, 0, 3, 2};
-		UMaterialInterface* mat = LoadObject<UMaterialInterface>(nullptr, TEXT("/CityGenerator/Materials/M_VertexColor.M_VertexColor"));
+
+		UMaterialInterface* mat = LoadObject<UMaterialInterface>(
+			nullptr,
+			TEXT("/CityGenerator/Materials/M_VertexColor.M_VertexColor")
+		);
+
+		FColor color = FColor::MakeRandomColor();
 		TArray<FVector2D> uvs;
 
-		for (int j = 0; j < face.Num(); j++) {
-			uvs.Add(FVector2D(face[j].X / 50.0f, face[j].Y / 50.0f));
-			face[j] = FVector(face[j].X, face[j].Y, 10.0f);
+		for (auto& v : roofVerts)
+			uvs.Add(FVector2D(v.X / 50.0f, v.Y / 50.0f));
+
+		// --- Create roof mesh ---
+		CreateProceduralMesh(roofVerts, triangles, mat, uvs, color, false);
+
+		// --- Create walls ---
+		const int numVerts = verts2D.Num();
+		for (int i = 0; i < numVerts; i++) {
+			int next = (i + 1) % numVerts;
+
+			FVector bottom1(verts2D[i].X, verts2D[i].Y, 0);
+			FVector bottom2(verts2D[next].X, verts2D[next].Y, 0);
+			FVector top1(verts2D[i].X, verts2D[i].Y, height);
+			FVector top2(verts2D[next].X, verts2D[next].Y, height);
+
+			TArray<FVector> wallVerts = {bottom1, bottom2, top2, top1};
+			TArray<int32> wallTris = {0, 2, 1, 0, 3, 2};
+
+			TArray<FVector2D> wallUVs;
+			wallUVs.Add(FVector2D(0, 0));
+			wallUVs.Add(FVector2D(1, 0));
+			wallUVs.Add(FVector2D(1, 1));
+			wallUVs.Add(FVector2D(0, 1));
+
+			CreateProceduralMesh(wallVerts, wallTris, mat, wallUVs, color, false);
 		}
-		CreateProceduralMesh(face, triangles, mat, uvs);
 	}
-	
+
 }
 
 #undef LOCTEXT_NAMESPACE
