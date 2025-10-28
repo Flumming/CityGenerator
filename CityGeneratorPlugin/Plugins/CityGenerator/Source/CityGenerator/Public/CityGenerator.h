@@ -5,6 +5,16 @@
 #include "Modules/ModuleManager.h"
 #include "Roads.h"
 #include "Buildings.h"
+#include <ProceduralMeshComponent.h>
+
+struct MeshBatch {
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	TArray<FColor> VertexColors;
+	TArray<FProcMeshTangent> Tangents;
+};
 
 class FCityGeneratorModule : public IModuleInterface
 {
@@ -53,4 +63,20 @@ private:
 	TArray<BuildingFootprint> buildings;
 
 	float smallRoadChange;
+
+
+	void AddToBatch(
+		UMaterialInterface* Material,
+		const TArray<FVector>& Vertices,
+		const TArray<int32>& Triangles,
+		const TArray<FVector2D>& InUVs,
+		const FColor InVertexColor = FColor::White
+	);
+
+	void FlushBatches();
+
+
+	TMap<UMaterialInterface*, MeshBatch> materialBatches;
+	AActor* CombinedMeshActor = nullptr;
+	UProceduralMeshComponent* CombinedProcMesh = nullptr;
 };

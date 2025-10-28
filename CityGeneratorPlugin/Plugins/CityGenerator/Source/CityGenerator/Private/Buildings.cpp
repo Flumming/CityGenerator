@@ -9,6 +9,8 @@ TArray<BuildingFootprint> BuildingGenerator::GenerateBuildings(const TArray<FVec
 		return buildings;
 	}
 
+	float smallOffset = 0.1f;
+
 	for (int i = 0; i < numVerts; i++) {
 		FVector2D prevVert = cityBlock[(i - 1 + numVerts) % numVerts];
 		FVector2D position = cityBlock[i];
@@ -33,6 +35,10 @@ TArray<BuildingFootprint> BuildingGenerator::GenerateBuildings(const TArray<FVec
 			TArray<bool> isCorner = {false, false};
 			if (position == cityBlock[i]) {
 				isCorner[0] = true;
+				float offset = buildingWidth + smallOffset;
+				position += direction * offset;
+				distance -= offset;
+				continue;
 			}
 
 			BuildingFootprint building = CreateBuilding(position, direction, buildingWidth, isCorner, cornerDir);
@@ -41,14 +47,15 @@ TArray<BuildingFootprint> BuildingGenerator::GenerateBuildings(const TArray<FVec
 			}
 
 			float gapSize;
-			if (FMath::FRand() < 0.25f) {
+			if (FMath::FRand() < 0.1f) {
 				gapSize = FMath::FRandRange(minGap, maxGap);
 			}
 			else {
 				gapSize = 0.0f;
 			}
-			position += direction * (buildingWidth + gapSize);
-			distance = distance - buildingWidth - gapSize;
+			float offset = buildingWidth + gapSize + smallOffset;
+			position += direction * offset;
+			distance -= offset;
 		}
 		if (distance > minWidth) {
 			// create last building
@@ -159,13 +166,14 @@ bool DoPolygonsOverlap(const TArray<FVector2D>& PolyA, const TArray<FVector2D>& 
 
 	return false;
 }
+
 void BuildingGenerator::AddBuilding(BuildingFootprint building, TArray<BuildingFootprint>& buildings, const TArray<FVector2D> cityBlock) {
 	bool addBuilding = true;
 
 	for (auto& existingBuilding : buildings) {
 		if (DoPolygonsOverlap(building.vertices, existingBuilding.vertices)) {
 			addBuilding = false;
-			break; // stop once overlap is found
+			break; 
 		}
 	}
 

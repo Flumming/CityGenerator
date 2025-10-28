@@ -22,13 +22,13 @@ private:
 	void AddBuilding(BuildingFootprint building, TArray<BuildingFootprint>& buildings, const TArray<FVector2D> cityBlock);
 
 	float minWidth = 750.0f;
-	float maxWidth = 2000.0f;
+	float maxWidth = 1500.0f;
 
-	float minDepth = 1250.0f;
-	float maxDepth = 2500.0f;
+	float minDepth = 1000.0f;
+	float maxDepth = 2000.0f;
 
-	float minHeight = 4000.0f;
-	float maxHeight = 10000.0f;
+	float minHeight = 3000.0f;
+	float maxHeight = 6000.0f;
 	
 	float minGap = 150.0f;
 	float maxGap = 300.0f;
